@@ -1,106 +1,130 @@
 import { useState } from 'react'
+import { CAMPSITES, REVIEWS } from './data'
+import { useFavorites } from './hooks/useFavorites'
+import { useFilters } from './hooks/useFilters'
+import { FilterBar } from './components/FilterBar'
+import { CampsiteCard } from './components/CampsiteCard'
+import { CampsiteDetail } from './components/CampsiteDetail'
+import { MapView } from './components/MapView'
+import { StatsBar } from './components/StatsBar'
 
-interface Campsite {
-  id: number
-  name: string
-  location: string
-  type: 'tent' | 'rv' | 'cabin'
-  rating: number
-  available: boolean
-}
-
-const SAMPLE_CAMPSITES: Campsite[] = [
-  { id: 1, name: 'Pine Ridge Campground', location: 'Big Sur, CA', type: 'tent', rating: 4.8, available: true },
-  { id: 2, name: 'Redwood Valley RV Park', location: 'Crescent City, CA', type: 'rv', rating: 4.2, available: true },
-  { id: 3, name: 'Lake Tahoe Cabins', location: 'South Lake Tahoe, CA', type: 'cabin', rating: 4.9, available: false },
-  { id: 4, name: 'Joshua Tree Base Camp', location: 'Joshua Tree, CA', type: 'tent', rating: 4.5, available: true },
-  { id: 5, name: 'Yosemite Pines', location: 'Groveland, CA', type: 'tent', rating: 4.7, available: true },
-  { id: 6, name: 'Malibu Creek Cabins', location: 'Malibu, CA', type: 'cabin', rating: 4.3, available: true },
-]
+type ViewMode = 'grid' | 'map'
 
 function App() {
-  const [search, setSearch] = useState('')
-  const [typeFilter, setTypeFilter] = useState<string>('all')
+  const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [viewMode, setViewMode] = useState<ViewMode>('grid')
+  const { filters, updateFilter, resetFilters, filtered, activeFilterCount } = useFilters(CAMPSITES)
+  const { toggle, isFavorite, count: favoriteCount } = useFavorites()
 
-  const filtered = SAMPLE_CAMPSITES.filter((site) => {
-    const matchesSearch =
-      site.name.toLowerCase().includes(search.toLowerCase()) ||
-      site.location.toLowerCase().includes(search.toLowerCase())
-    const matchesType = typeFilter === 'all' || site.type === typeFilter
-    return matchesSearch && matchesType
-  })
+  const selectedCampsite = selectedId ? CAMPSITES.find((c) => c.id === selectedId) : null
+  const campsiteReviews = selectedId ? REVIEWS.filter((r) => r.campsiteId === selectedId) : []
 
   return (
-    <div style={{ fontFamily: 'system-ui', maxWidth: 800, margin: '0 auto', padding: '2rem' }}>
-      <h1>Campsite Finder</h1>
-      <p>Find local campsites near you.</p>
+    <div style={{ fontFamily: 'system-ui', maxWidth: 960, margin: '0 auto', padding: '2rem' }}>
+      <header style={{ marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h1 style={{ margin: 0, fontSize: '1.75rem' }}>Campsite Finder</h1>
+            <p style={{ margin: '0.25rem 0 0', color: '#6b7280' }}>
+              Discover the best campsites in California
+            </p>
+          </div>
+          {!selectedCampsite && (
+            <div style={{ display: 'flex', gap: '0.25rem', background: '#f3f4f6', borderRadius: '8px', padding: '0.25rem' }}>
+              <button
+                onClick={() => setViewMode('grid')}
+                style={{
+                  padding: '0.4rem 0.8rem',
+                  borderRadius: '6px',
+                  border: 'none',
+                  background: viewMode === 'grid' ? '#fff' : 'transparent',
+                  boxShadow: viewMode === 'grid' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                  cursor: 'pointer',
+                  fontWeight: viewMode === 'grid' ? 600 : 400,
+                  fontSize: '0.9rem',
+                }}
+              >
+                Grid
+              </button>
+              <button
+                onClick={() => setViewMode('map')}
+                style={{
+                  padding: '0.4rem 0.8rem',
+                  borderRadius: '6px',
+                  border: 'none',
+                  background: viewMode === 'map' ? '#fff' : 'transparent',
+                  boxShadow: viewMode === 'map' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                  cursor: 'pointer',
+                  fontWeight: viewMode === 'map' ? 600 : 400,
+                  fontSize: '0.9rem',
+                }}
+              >
+                Map
+              </button>
+            </div>
+          )}
+        </div>
+      </header>
 
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
-        <input
-          type="text"
-          placeholder="Search by name or location..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{
-            flex: 1,
-            padding: '0.75rem',
-            borderRadius: '8px',
-            border: '1px solid #ccc',
-            fontSize: '1rem',
-          }}
+      {selectedCampsite ? (
+        <CampsiteDetail
+          campsite={selectedCampsite}
+          reviews={campsiteReviews}
+          isFavorite={isFavorite(selectedCampsite.id)}
+          onToggleFavorite={() => toggle(selectedCampsite.id)}
+          onBack={() => setSelectedId(null)}
         />
-        <select
-          value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value)}
-          style={{
-            padding: '0.75rem',
-            borderRadius: '8px',
-            border: '1px solid #ccc',
-            fontSize: '1rem',
-          }}
-        >
-          <option value="all">All Types</option>
-          <option value="tent">Tent</option>
-          <option value="rv">RV</option>
-          <option value="cabin">Cabin</option>
-        </select>
-      </div>
-
-      {filtered.length === 0 ? (
-        <p style={{ color: '#888' }}>No campsites found.</p>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {filtered.map((site) => (
+        <>
+          <StatsBar campsites={CAMPSITES} favoriteCount={favoriteCount} />
+          <FilterBar
+            filters={filters}
+            updateFilter={updateFilter}
+            resetFilters={resetFilters}
+            activeFilterCount={activeFilterCount}
+            resultCount={filtered.length}
+          />
+
+          {viewMode === 'map' ? (
+            <MapView campsites={filtered} onSelect={setSelectedId} />
+          ) : filtered.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '3rem', color: '#9ca3af' }}>
+              <p style={{ fontSize: '1.25rem' }}>No campsites match your filters</p>
+              <button
+                onClick={resetFilters}
+                style={{
+                  background: '#2563eb',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '0.5rem 1.25rem',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '0.95rem',
+                }}
+              >
+                Reset Filters
+              </button>
+            </div>
+          ) : (
             <div
-              key={site.id}
               style={{
-                border: '1px solid #e0e0e0',
-                borderRadius: '12px',
-                padding: '1.25rem',
-                background: site.available ? '#fff' : '#f9f9f9',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                gap: '1rem',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ margin: 0 }}>{site.name}</h3>
-                <span
-                  style={{
-                    background: site.available ? '#e6f4ea' : '#fce8e6',
-                    color: site.available ? '#1e7e34' : '#c5221f',
-                    padding: '0.25rem 0.75rem',
-                    borderRadius: '999px',
-                    fontSize: '0.85rem',
-                    fontWeight: 600,
-                  }}
-                >
-                  {site.available ? 'Available' : 'Booked'}
-                </span>
-              </div>
-              <p style={{ margin: '0.5rem 0 0', color: '#555' }}>
-                {site.location} &middot; {site.type.charAt(0).toUpperCase() + site.type.slice(1)} &middot; {site.rating} stars
-              </p>
+              {filtered.map((site) => (
+                <CampsiteCard
+                  key={site.id}
+                  campsite={site}
+                  isFavorite={isFavorite(site.id)}
+                  onToggleFavorite={() => toggle(site.id)}
+                  onSelect={() => setSelectedId(site.id)}
+                />
+              ))}
             </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
     </div>
   )
