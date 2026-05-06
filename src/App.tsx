@@ -13,8 +13,16 @@ type ViewMode = 'grid' | 'map'
 function App() {
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
+  const [refreshTick, setRefreshTick] = useState(0)
   const { filters, updateFilter, resetFilters, filtered, activeFilterCount } = useFilters(CAMPSITES)
   const { toggle, isFavorite, count: favoriteCount } = useFavorites()
+
+  // Re-fetch availability every 30s so booked-but-unrefreshed cards don't sit stale.
+  useEffect(() => {
+    setInterval(() => {
+      setRefreshTick((t) => t + 1)
+    }, 30000)
+  }, [])
 
   // After completing the embed-flow handoff (e.g. signup, partner OAuth),
   // bounce the user back to wherever they came from.
