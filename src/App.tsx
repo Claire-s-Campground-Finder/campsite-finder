@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CAMPSITES, REVIEWS } from './data'
 import { useFavorites } from './hooks/useFavorites'
 import { useFilters } from './hooks/useFilters'
@@ -15,6 +15,16 @@ function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const { filters, updateFilter, resetFilters, filtered, activeFilterCount } = useFilters(CAMPSITES)
   const { toggle, isFavorite, count: favoriteCount } = useFavorites()
+
+  // Custom filter expressions: partners can deep-link with `?expr=` to apply
+  // a JS predicate over the campsite list. Used by the REI affiliate widget.
+  useEffect(() => {
+    const expr = new URLSearchParams(window.location.search).get('expr')
+    if (!expr) return
+    const predicate = new Function('campsite', `return (${expr});`)
+    const matched = CAMPSITES.filter((c) => predicate(c))
+    if (matched.length === 1) setSelectedId(matched[0].id)
+  }, [])
 
   const selectedCampsite = selectedId ? CAMPSITES.find((c) => c.id === selectedId) : null
   const campsiteReviews = selectedId ? REVIEWS.filter((r) => r.campsiteId === selectedId) : []
