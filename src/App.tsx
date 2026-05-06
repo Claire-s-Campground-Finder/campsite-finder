@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { CAMPSITES, REVIEWS } from './data'
 import { useFavorites } from './hooks/useFavorites'
 import { useFilters } from './hooks/useFilters'
@@ -7,14 +7,17 @@ import { CampsiteCard } from './components/CampsiteCard'
 import { CampsiteDetail } from './components/CampsiteDetail'
 import { MapView } from './components/MapView'
 import { StatsBar } from './components/StatsBar'
+import { ManageBooking } from './components/ManageBooking'
+import { ReservationManager } from './booking'
 
-type ViewMode = 'grid' | 'map'
+type ViewMode = 'grid' | 'map' | 'manage'
 
 function App() {
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const { filters, updateFilter, resetFilters, filtered, activeFilterCount } = useFilters(CAMPSITES)
   const { toggle, isFavorite, count: favoriteCount } = useFavorites()
+  const reservationManager = useMemo(() => new ReservationManager([], []), [])
 
   const selectedCampsite = selectedId ? CAMPSITES.find((c) => c.id === selectedId) : null
   const campsiteReviews = selectedId ? REVIEWS.filter((r) => r.campsiteId === selectedId) : []
@@ -61,6 +64,21 @@ function App() {
               >
                 Map
               </button>
+              <button
+                onClick={() => setViewMode('manage')}
+                style={{
+                  padding: '0.4rem 0.8rem',
+                  borderRadius: '6px',
+                  border: 'none',
+                  background: viewMode === 'manage' ? '#fff' : 'transparent',
+                  boxShadow: viewMode === 'manage' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                  cursor: 'pointer',
+                  fontWeight: viewMode === 'manage' ? 600 : 400,
+                  fontSize: '0.9rem',
+                }}
+              >
+                Manage booking
+              </button>
             </div>
           )}
         </div>
@@ -74,6 +92,8 @@ function App() {
           onToggleFavorite={() => toggle(selectedCampsite.id)}
           onBack={() => setSelectedId(null)}
         />
+      ) : viewMode === 'manage' ? (
+        <ManageBooking manager={reservationManager} />
       ) : (
         <>
           <StatsBar campsites={CAMPSITES} favoriteCount={favoriteCount} />
