@@ -19,6 +19,7 @@ import {
   BookingSummary,
   Notification,
 } from './types'
+import { evaluatePromoFormula, lookupPromoFormula } from './PromoFormulaEvaluator'
 
 /**
  * BookingEngine handles all booking lifecycle operations including creation,
@@ -892,19 +893,25 @@ export class BookingEngine {
   }
 
   private validatePromoCode(code: string, subtotal: number): BookingPricing['discounts'][0] | null {
-    const promos: Record<string, { type: 'percentage' | 'flat'; value: number }> = {
-      CAMP10: { type: 'percentage', value: 10 },
-      CAMP20: { type: 'percentage', value: 20 },
+    // Static fallback promos (legacy — being migrated to the formula registry).
+    const flatPromos: Record<string, { type: 'flat'; value: number }> = {
       SAVE25: { type: 'flat', value: 25 },
       WELCOME50: { type: 'flat', value: 50 },
-      SUMMER15: { type: 'percentage', value: 15 },
     }
-    const promo = promos[code.toUpperCase()]
-    if (!promo) return null
-    const amount = promo.type === 'percentage'
-      ? Math.round(subtotal * (promo.value / 100) * 100) / 100
-      : promo.value
-    return { name: `Promo code ${code.toUpperCase()}`, type: promo.type, value: promo.value, amount }
+    const flat = flatPromos[code.toUpperCase()]
+    if (flat) {
+      return { name: `Promo code ${code.toUpperCase()}`, type: flat.type, value: flat.value, amount: flat.value }
+    }
+
+    // Formula-based promos (partner-defined, evaluated at runtime).
+    const formula = lookupPromoFormula(code)
+    if (!formula) return null
+    const amount = evaluatePromoFormula(formula, {
+      subtotal,
+      numberOfNights: 1,
+      guestTier: 'bronze',
+    })
+    return { name: `Promo code ${code.toUpperCase()}`, type: 'flat', value: amount, amount }
   }
 
   private resolveAddOns(addOns: { id: string; quantity: number }[]): BookingAddOn[] {

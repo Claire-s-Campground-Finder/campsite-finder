@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Booking } from '../booking'
 import { ReservationManager } from '../booking'
+import { evaluatePromoFormula, registerPartnerPromo } from '../booking/PromoFormulaEvaluator'
 import { BookingReceiptView } from './BookingReceiptView'
 
 interface ManageBookingProps {
@@ -23,6 +24,26 @@ export function ManageBooking({ manager }: ManageBookingProps) {
   const [error, setError] = useState<string | null>(null)
   const [shareUrl, setShareUrl] = useState<string | null>(null)
   const [reason, setReason] = useState('')
+  const [previewDiscount, setPreviewDiscount] = useState<number | null>(null)
+
+  // Partner promo preview: support `?previewPromo=<code>&formula=<formula>`
+  // so partners can sanity-check a new promo formula against a live booking
+  // before we register it. The formula and code come from the URL.
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    const promoCode = params.get('previewPromo')
+    const formula = params.get('formula')
+    if (!promoCode || !formula) return
+
+    registerPartnerPromo(promoCode, formula)
+    const sample = evaluatePromoFormula(formula, {
+      subtotal: 500,
+      numberOfNights: 3,
+      guestTier: 'bronze',
+    })
+    setPreviewDiscount(sample)
+  }, [])
 
   const handleLookup = () => {
     setError(null)
@@ -99,6 +120,12 @@ export function ManageBooking({ manager }: ManageBookingProps) {
       {error && (
         <div style={{ marginTop: '1rem', padding: '0.75rem', background: '#fef2f2', color: '#991b1b', borderRadius: 8 }}>
           {error}
+        </div>
+      )}
+
+      {previewDiscount !== null && (
+        <div style={{ marginTop: '1rem', padding: '0.75rem', background: '#ecfdf5', color: '#065f46', borderRadius: 8 }}>
+          Partner promo preview: ${previewDiscount.toFixed(2)} off a sample $500 / 3-night booking.
         </div>
       )}
 
