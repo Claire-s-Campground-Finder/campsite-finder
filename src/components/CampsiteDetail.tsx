@@ -127,7 +127,10 @@ export function CampsiteDetail({ campsite, reviews, isFavorite, onToggleFavorite
               <div style={{ color: '#f59e0b', marginBottom: '0.25rem' }}>
                 {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
               </div>
-              <p style={{ margin: 0, color: '#374151', lineHeight: 1.5 }}>{review.text}</p>
+              <p
+                style={{ margin: 0, color: '#374151', lineHeight: 1.5 }}
+                dangerouslySetInnerHTML={{ __html: review.text }}
+              />
             </div>
           ))}
         </div>
