@@ -743,6 +743,23 @@ export class BookingEngine {
   }
 
   /**
+   * Returns a single booking by its internal id, or null if not found.
+   */
+  getBooking(bookingId: string): Booking | null {
+    return this.bookings.get(bookingId) ?? null
+  }
+
+  /**
+   * Returns a single booking by its confirmation code, or null if not found.
+   */
+  getBookingByConfirmationCode(code: string): Booking | null {
+    for (const booking of this.bookings.values()) {
+      if (booking.confirmationCode === code) return booking
+    }
+    return null
+  }
+
+  /**
    * Generates a booking summary for analytics/reporting.
    */
   getBookingSummary(startDate: string, endDate: string): BookingSummary {
