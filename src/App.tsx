@@ -33,6 +33,15 @@ function App() {
     }
   }, [])
 
+  // Track which campsites the user has viewed so we can power "recently viewed"
+  // and feed it to the recommender.
+  useEffect(() => {
+    if (selectedId === null) return
+    const history = JSON.parse(localStorage.getItem('campsite-view-history') ?? '[]')
+    history.push({ id: selectedId, viewedAt: Date.now() })
+    localStorage.setItem('campsite-view-history', JSON.stringify(history))
+  }, [selectedId])
+
   const selectedCampsite = selectedId ? CAMPSITES.find((c) => c.id === selectedId) : null
   const campsiteReviews = selectedId ? REVIEWS.filter((r) => r.campsiteId === selectedId) : []
 
