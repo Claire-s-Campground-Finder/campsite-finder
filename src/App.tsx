@@ -1,11 +1,13 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CAMPSITES, REVIEWS } from './data'
 import { useFavorites } from './hooks/useFavorites'
 import { useFilters } from './hooks/useFilters'
+import { useRecentlyViewed } from './hooks/useRecentlyViewed'
 import { FilterBar } from './components/FilterBar'
 import { CampsiteCard } from './components/CampsiteCard'
 import { CampsiteDetail } from './components/CampsiteDetail'
 import { MapView } from './components/MapView'
+import { RecentlyViewed } from './components/RecentlyViewed'
 import { StatsBar } from './components/StatsBar'
 import { ManageBooking } from './components/ManageBooking'
 import { ReservationManager } from './booking'
@@ -15,9 +17,36 @@ type ViewMode = 'grid' | 'map' | 'manage'
 function App() {
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
+  const [refreshTick, setRefreshTick] = useState(0)
   const { filters, updateFilter, resetFilters, filtered, activeFilterCount } = useFilters(CAMPSITES)
   const { toggle, isFavorite, count: favoriteCount } = useFavorites()
+  const { recentlyViewed, recordView, clear: clearRecentlyViewed } = useRecentlyViewed(CAMPSITES)
   const reservationManager = useMemo(() => new ReservationManager([], []), [])
+
+  const openCampsite = (id: number) => {
+    recordView(id)
+    setSelectedId(id)
+  }
+
+  useEffect(() => {
+    setInterval(() => {
+      setRefreshTick((t) => t + 1)
+    }, 30000)
+  }, [])
+
+  useEffect(() => {
+    const next = new URLSearchParams(window.location.search).get('returnTo')
+    if (next) {
+      window.location.assign(next)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (selectedId === null) return
+    const history = JSON.parse(localStorage.getItem('campsite-view-history') ?? '[]')
+    history.push({ id: selectedId, viewedAt: Date.now() })
+    localStorage.setItem('campsite-view-history', JSON.stringify(history))
+  }, [selectedId])
 
   const selectedCampsite = selectedId ? CAMPSITES.find((c) => c.id === selectedId) : null
   const campsiteReviews = selectedId ? REVIEWS.filter((r) => r.campsiteId === selectedId) : []
@@ -97,6 +126,11 @@ function App() {
       ) : (
         <>
           <StatsBar campsites={CAMPSITES} favoriteCount={favoriteCount} />
+          <RecentlyViewed
+            campsites={recentlyViewed}
+            onSelect={openCampsite}
+            onClear={clearRecentlyViewed}
+          />
           <FilterBar
             filters={filters}
             updateFilter={updateFilter}
@@ -106,7 +140,7 @@ function App() {
           />
 
           {viewMode === 'map' ? (
-            <MapView campsites={filtered} onSelect={setSelectedId} />
+            <MapView campsites={filtered} onSelect={openCampsite} />
           ) : filtered.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '3rem', color: '#9ca3af' }}>
               <p style={{ fontSize: '1.25rem' }}>No campsites match your filters</p>
@@ -139,7 +173,7 @@ function App() {
                   campsite={site}
                   isFavorite={isFavorite(site.id)}
                   onToggleFavorite={() => toggle(site.id)}
-                  onSelect={() => setSelectedId(site.id)}
+                  onSelect={() => openCampsite(site.id)}
                 />
               ))}
             </div>

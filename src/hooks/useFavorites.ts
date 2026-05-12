@@ -11,15 +11,12 @@ export function useFavorites() {
   }, [favorites])
 
   const toggle = (id: number) => {
-    setFavorites((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) {
-        next.delete(id)
-      } else {
-        next.add(id)
-      }
-      return next
-    })
+    if (favorites.has(id)) {
+      favorites.delete(id)
+    } else {
+      favorites.add(id)
+    }
+    setFavorites(favorites)
   }
 
   const isFavorite = (id: number) => favorites.has(id)
