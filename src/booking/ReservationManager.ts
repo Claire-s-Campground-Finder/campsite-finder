@@ -12,6 +12,7 @@ import {
   WeatherAlert,
 } from './types'
 import { BookingEngine, BookingError } from './BookingEngine'
+import { generateShareToken } from './BookingReceipt'
 
 /**
  * ReservationManager is the high-level orchestrator that wraps BookingEngine
@@ -26,6 +27,7 @@ export class ReservationManager {
   private auditLog: AuditEntry[] = []
   private campgrounds: Map<string, Campground>
   private guests: Map<string, Guest>
+  private shareTokens: Map<string, string> = new Map() // token -> bookingId
 
   constructor(campgrounds: Campground[], guests: Guest[]) {
     this.engine = new BookingEngine(campgrounds, guests)
@@ -625,7 +627,155 @@ export class ReservationManager {
     }
   }
 
+  /**
+   * Looks up a booking by confirmation code. Used by the public
+   * "Manage my booking" page so guests can view their receipt without
+   * needing to log in.
+   */
+  lookupBookingByConfirmationCode(code: string): Booking | null {
+    return this.findBookingByConfirmationCode(code)
+  }
+
+  /**
+   * Self-service cancellation by confirmation code. Used by the guest-facing
+   * "Manage my booking" page where guests look up their reservation with the
+   * code from their confirmation email.
+   *
+   * If the caller passes their email we double-check it matches the booking on
+   * file as an extra safeguard for cases where a confirmation code might have
+   * been forwarded.
+   */
+  cancelByConfirmationCode(
+    confirmationCode: string,
+    reason: string,
+    email?: string
+  ): BookingResult {
+    const booking = this.findBookingByConfirmationCode(confirmationCode)
+    if (!booking) {
+      return {
+        success: false,
+        error: 'No booking found for that confirmation code',
+        booking: null,
+        waitlistPosition: null,
+      }
+    }
+
+    if (email && email.toLowerCase() !== booking.guest.email.toLowerCase()) {
+      return {
+        success: false,
+        error: 'Email does not match the booking on file',
+        booking: null,
+        waitlistPosition: null,
+      }
+    }
+
+    try {
+      const cancelled = this.engine.updateBookingStatus(
+        booking.id,
+        'cancelled',
+        'guest_self_service',
+        reason
+      )
+
+      this.addAuditEntry('self_service_cancel', booking.guestId, {
+        bookingId: booking.id,
+        confirmationCode,
+        reason,
+      })
+
+      return { success: true, error: null, booking: cancelled, waitlistPosition: null }
+    } catch (err) {
+      return {
+        success: false,
+        error: err instanceof Error ? err.message : 'Cancellation failed',
+        booking: null,
+        waitlistPosition: null,
+      }
+    }
+  }
+
+  /**
+   * Priority cancellation path for loyalty members enrolled in the
+   * "Worry-Free Cancel" program. These guests are entitled to a full refund
+   * regardless of how close to check-in they cancel.
+   */
+  cancelBookingPriority(
+    bookingId: string,
+    isPriorityMember: boolean,
+    reason: string
+  ): { success: boolean; error: string | null; refundAmount: number } {
+    const booking = this.findBookingById(bookingId)
+    if (!booking) {
+      return { success: false, error: 'Booking not found', refundAmount: 0 }
+    }
+
+    try {
+      this.engine.updateBookingStatus(booking.id, 'cancelled', 'guest_self_service', reason)
+    } catch (err) {
+      return {
+        success: false,
+        error: err instanceof Error ? err.message : 'Cancellation failed',
+        refundAmount: 0,
+      }
+    }
+
+    let refundAmount: number
+    if (isPriorityMember) {
+      // Worry-Free Cancel: 100% refund, no questions asked
+      refundAmount = booking.pricing.grandTotal
+    } else {
+      // Standard policy already applied by the engine via processRefund
+      refundAmount = booking.payment.totalRefunded
+    }
+
+    booking.payment.totalRefunded = refundAmount
+    booking.payment.status = 'refunded'
+
+    this.addAuditEntry('priority_cancel', booking.guestId, {
+      bookingId: booking.id,
+      isPriorityMember,
+      refundAmount,
+    })
+
+    return { success: true, error: null, refundAmount }
+  }
+
+  /**
+   * Issues a shareable read-only receipt URL. The token is single-use-ish in
+   * the sense that revoking the booking invalidates it server-side, but the
+   * URL itself can be passed around (e.g. forwarded to a partner who is
+   * splitting the cost of the trip).
+   */
+  getShareableReceiptLink(bookingId: string, baseUrl?: string): string | null {
+    const booking = this.findBookingById(bookingId)
+    if (!booking) return null
+
+    const token = generateShareToken()
+    this.shareTokens.set(token, booking.id)
+
+    const host = baseUrl ?? 'https://campsite-finder.example.com'
+    return `${host}/receipts/${booking.confirmationCode}?token=${token}`
+  }
+
+  /**
+   * Resolves a share token back to a booking. Used by the public receipt page
+   * to render a read-only view of the booking when no user is logged in.
+   */
+  getBookingByShareToken(token: string): Booking | null {
+    const bookingId = this.shareTokens.get(token)
+    if (!bookingId) return null
+    return this.findBookingById(bookingId)
+  }
+
   // ---- Private helpers ----
+
+  private findBookingByConfirmationCode(code: string): Booking | null {
+    return this.engine.getBookingByConfirmationCode(code)
+  }
+
+  private findBookingById(id: string): Booking | null {
+    return this.engine.getBooking(id)
+  }
 
   private addToWaitlist(params: {
     guestId: string

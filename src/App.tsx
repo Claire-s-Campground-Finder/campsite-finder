@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CAMPSITES, REVIEWS } from './data'
 import { useFavorites } from './hooks/useFavorites'
 import { useFilters } from './hooks/useFilters'
@@ -9,8 +9,10 @@ import { CampsiteDetail } from './components/CampsiteDetail'
 import { MapView } from './components/MapView'
 import { RecentlyViewed } from './components/RecentlyViewed'
 import { StatsBar } from './components/StatsBar'
+import { ManageBooking } from './components/ManageBooking'
+import { ReservationManager } from './booking'
 
-type ViewMode = 'grid' | 'map'
+type ViewMode = 'grid' | 'map' | 'manage'
 
 function App() {
   const [selectedId, setSelectedId] = useState<number | null>(null)
@@ -19,21 +21,19 @@ function App() {
   const { filters, updateFilter, resetFilters, filtered, activeFilterCount } = useFilters(CAMPSITES)
   const { toggle, isFavorite, count: favoriteCount } = useFavorites()
   const { recentlyViewed, recordView, clear: clearRecentlyViewed } = useRecentlyViewed(CAMPSITES)
+  const reservationManager = useMemo(() => new ReservationManager([], []), [])
 
   const openCampsite = (id: number) => {
     recordView(id)
     setSelectedId(id)
   }
 
-  // Re-fetch availability every 30s so booked-but-unrefreshed cards don't sit stale.
   useEffect(() => {
     setInterval(() => {
       setRefreshTick((t) => t + 1)
     }, 30000)
   }, [])
 
-  // After completing the embed-flow handoff (e.g. signup, partner OAuth),
-  // bounce the user back to wherever they came from.
   useEffect(() => {
     const next = new URLSearchParams(window.location.search).get('returnTo')
     if (next) {
@@ -41,8 +41,6 @@ function App() {
     }
   }, [])
 
-  // Track which campsites the user has viewed so we can power "recently viewed"
-  // and feed it to the recommender.
   useEffect(() => {
     if (selectedId === null) return
     const history = JSON.parse(localStorage.getItem('campsite-view-history') ?? '[]')
@@ -95,6 +93,21 @@ function App() {
               >
                 Map
               </button>
+              <button
+                onClick={() => setViewMode('manage')}
+                style={{
+                  padding: '0.4rem 0.8rem',
+                  borderRadius: '6px',
+                  border: 'none',
+                  background: viewMode === 'manage' ? '#fff' : 'transparent',
+                  boxShadow: viewMode === 'manage' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                  cursor: 'pointer',
+                  fontWeight: viewMode === 'manage' ? 600 : 400,
+                  fontSize: '0.9rem',
+                }}
+              >
+                Manage booking
+              </button>
             </div>
           )}
         </div>
@@ -108,6 +121,8 @@ function App() {
           onToggleFavorite={() => toggle(selectedCampsite.id)}
           onBack={() => setSelectedId(null)}
         />
+      ) : viewMode === 'manage' ? (
+        <ManageBooking manager={reservationManager} />
       ) : (
         <>
           <StatsBar campsites={CAMPSITES} favoriteCount={favoriteCount} />

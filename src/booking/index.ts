@@ -1,5 +1,6 @@
 export { BookingEngine, BookingError } from './BookingEngine'
 export { ReservationManager } from './ReservationManager'
+export { generateReceiptHTML, generateShareToken } from './BookingReceipt'
 export type {
   Booking,
   BookingStatus,
