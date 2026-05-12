@@ -78,6 +78,30 @@ export function MapView({ campsites, onSelect }: MapViewProps) {
         )
       })}
 
+      {campsites.length === 0 && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(255,255,255,0.6)',
+            color: '#374151',
+            gap: '0.25rem',
+            zIndex: 2,
+          }}
+        >
+          <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>
+            No campsites on the map
+          </p>
+          <p style={{ margin: 0, fontSize: '0.85rem', color: '#6b7280' }}>
+            Try widening your filters.
+          </p>
+        </div>
+      )}
+
       <div
         style={{
           position: 'absolute',
