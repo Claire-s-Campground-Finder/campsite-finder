@@ -121,7 +121,13 @@ export function CampsiteDetail({ campsite, reviews, isFavorite, onToggleFavorite
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                <strong>{review.author}</strong>
+                {review.authorWebsite ? (
+                  <a href={review.authorWebsite} style={{ color: '#2563eb', fontWeight: 600 }}>
+                    {review.author}
+                  </a>
+                ) : (
+                  <strong>{review.author}</strong>
+                )}
                 <span style={{ color: '#9ca3af', fontSize: '0.85rem' }}>{review.date}</span>
               </div>
               <div style={{ color: '#f59e0b', marginBottom: '0.25rem' }}>

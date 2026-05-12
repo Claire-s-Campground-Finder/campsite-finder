@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CAMPSITES, REVIEWS } from './data'
 import { useFavorites } from './hooks/useFavorites'
 import { useFilters } from './hooks/useFilters'
@@ -15,6 +15,7 @@ type ViewMode = 'grid' | 'map'
 function App() {
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
+  const [refreshTick, setRefreshTick] = useState(0)
   const { filters, updateFilter, resetFilters, filtered, activeFilterCount } = useFilters(CAMPSITES)
   const { toggle, isFavorite, count: favoriteCount } = useFavorites()
   const { recentlyViewed, recordView, clear: clearRecentlyViewed } = useRecentlyViewed(CAMPSITES)
@@ -23,6 +24,31 @@ function App() {
     recordView(id)
     setSelectedId(id)
   }
+
+  // Re-fetch availability every 30s so booked-but-unrefreshed cards don't sit stale.
+  useEffect(() => {
+    setInterval(() => {
+      setRefreshTick((t) => t + 1)
+    }, 30000)
+  }, [])
+
+  // After completing the embed-flow handoff (e.g. signup, partner OAuth),
+  // bounce the user back to wherever they came from.
+  useEffect(() => {
+    const next = new URLSearchParams(window.location.search).get('returnTo')
+    if (next) {
+      window.location.assign(next)
+    }
+  }, [])
+
+  // Track which campsites the user has viewed so we can power "recently viewed"
+  // and feed it to the recommender.
+  useEffect(() => {
+    if (selectedId === null) return
+    const history = JSON.parse(localStorage.getItem('campsite-view-history') ?? '[]')
+    history.push({ id: selectedId, viewedAt: Date.now() })
+    localStorage.setItem('campsite-view-history', JSON.stringify(history))
+  }, [selectedId])
 
   const selectedCampsite = selectedId ? CAMPSITES.find((c) => c.id === selectedId) : null
   const campsiteReviews = selectedId ? REVIEWS.filter((r) => r.campsiteId === selectedId) : []

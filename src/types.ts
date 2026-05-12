@@ -32,6 +32,7 @@ export interface Review {
   id: number
   campsiteId: number
   author: string
+  authorWebsite?: string
   rating: number
   date: string
   text: string
