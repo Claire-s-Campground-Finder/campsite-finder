@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { CAMPSITES, REVIEWS } from './data'
+import { SEED_CAMPSITES } from './seedCampsites'
 import { useFavorites } from './hooks/useFavorites'
 import { useFilters } from './hooks/useFilters'
 import { useRecentlyViewed } from './hooks/useRecentlyViewed'
@@ -12,15 +13,17 @@ import { StatsBar } from './components/StatsBar'
 import { ManageBooking } from './components/ManageBooking'
 import { ReservationManager } from './booking'
 
+const ALL_CAMPSITES = [...CAMPSITES, ...SEED_CAMPSITES]
+
 type ViewMode = 'grid' | 'map' | 'manage'
 
 function App() {
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [refreshTick, setRefreshTick] = useState(0)
-  const { filters, updateFilter, resetFilters, filtered, activeFilterCount } = useFilters(CAMPSITES)
+  const { filters, updateFilter, resetFilters, filtered, activeFilterCount } = useFilters(ALL_CAMPSITES)
   const { toggle, isFavorite, count: favoriteCount } = useFavorites()
-  const { recentlyViewed, recordView, clear: clearRecentlyViewed } = useRecentlyViewed(CAMPSITES)
+  const { recentlyViewed, recordView, clear: clearRecentlyViewed } = useRecentlyViewed(ALL_CAMPSITES)
   const reservationManager = useMemo(() => new ReservationManager([], []), [])
 
   const openCampsite = (id: number) => {
@@ -48,7 +51,7 @@ function App() {
     localStorage.setItem('campsite-view-history', JSON.stringify(history))
   }, [selectedId])
 
-  const selectedCampsite = selectedId ? CAMPSITES.find((c) => c.id === selectedId) : null
+  const selectedCampsite = selectedId ? ALL_CAMPSITES.find((c) => c.id === selectedId) : null
   const campsiteReviews = selectedId ? REVIEWS.filter((r) => r.campsiteId === selectedId) : []
 
   return (
@@ -125,7 +128,7 @@ function App() {
         <ManageBooking manager={reservationManager} />
       ) : (
         <>
-          <StatsBar campsites={CAMPSITES} favoriteCount={favoriteCount} />
+          <StatsBar campsites={ALL_CAMPSITES} favoriteCount={favoriteCount} />
           <RecentlyViewed
             campsites={recentlyViewed}
             onSelect={openCampsite}
