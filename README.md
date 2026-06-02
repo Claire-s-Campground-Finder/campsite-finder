@@ -15,3 +15,5 @@ npm run dev
 - TypeScript
 
 // review-once test: trivial change to trigger a Macroscope review (20260602T210230Z)
+
+// review-once test: SECOND push, should be skipped (20260602T210712Z)
