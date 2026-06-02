@@ -13,3 +13,5 @@ npm run dev
 
 - React + Vite
 - TypeScript
+
+// review-once test: trivial change to trigger a Macroscope review (20260602T210230Z)
