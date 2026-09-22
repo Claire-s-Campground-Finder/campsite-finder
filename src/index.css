@@ -1,0 +1,40 @@
+:root {
+  color: #173c27;
+  background: #edf8ef;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(187, 247, 208, 0.65), transparent 34rem),
+    linear-gradient(180deg, #f7fdf8 0%, #edf8ef 100%);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  accent-color: #15803d;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(34, 197, 94, 0.25);
+  outline-offset: 2px;
+}
+
+::selection {
+  color: #14532d;
+  background: #bbf7d0;
+}
