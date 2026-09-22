@@ -228,9 +228,9 @@ export function ReviewAnalytics({ reviews, campsiteName }: ReviewAnalyticsProps)
           {/* KPI cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
             <KpiCard label="Avg Rating" value={`${overallStats.avgRating}`} suffix="/ 5" color="#f59e0b" />
-            <KpiCard label="Total Reviews" value={`${overallStats.totalReviews}`} color="#2563eb" />
+            <KpiCard label="Total Reviews" value={`${overallStats.totalReviews}`} color="#15803d" />
             <KpiCard label="Recommend" value={`${overallStats.recommendRate}%`} color="#059669" />
-            <KpiCard label="Avg Helpful" value={`${overallStats.avgHelpful}`} suffix="votes" color="#8b5cf6" />
+            <KpiCard label="Avg Helpful" value={`${overallStats.avgHelpful}`} suffix="votes" color="#4d7c0f" />
           </div>
 
           {/* Category breakdown */}

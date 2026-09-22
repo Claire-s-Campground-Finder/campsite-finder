@@ -18,7 +18,7 @@ export function CampsiteDetail({ campsite, reviews, isFavorite, onToggleFavorite
           border: 'none',
           cursor: 'pointer',
           fontSize: '0.95rem',
-          color: '#2563eb',
+          color: '#15803d',
           padding: 0,
           marginBottom: '1rem',
         }}
@@ -29,7 +29,7 @@ export function CampsiteDetail({ campsite, reviews, isFavorite, onToggleFavorite
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h2 style={{ margin: 0 }}>{campsite.name}</h2>
-          <p style={{ margin: '0.25rem 0', color: '#6b7280' }}>
+          <p style={{ margin: '0.25rem 0', color: '#4b6b57' }}>
             {campsite.location}, {campsite.state}
           </p>
         </div>
@@ -70,7 +70,7 @@ export function CampsiteDetail({ campsite, reviews, isFavorite, onToggleFavorite
           gap: '1rem',
           margin: '1.5rem 0',
           padding: '1.25rem',
-          background: '#f9fafb',
+          background: '#f0fdf4',
           borderRadius: '12px',
         }}
       >
@@ -85,7 +85,7 @@ export function CampsiteDetail({ campsite, reviews, isFavorite, onToggleFavorite
       </div>
 
       <h3>About</h3>
-      <p style={{ color: '#374151', lineHeight: 1.6 }}>{campsite.description}</p>
+      <p style={{ color: '#274e36', lineHeight: 1.6 }}>{campsite.description}</p>
 
       <h3>Amenities</h3>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
@@ -93,8 +93,8 @@ export function CampsiteDetail({ campsite, reviews, isFavorite, onToggleFavorite
           <span
             key={amenity}
             style={{
-              background: '#eff6ff',
-              color: '#1d4ed8',
+              background: '#dcfce7',
+              color: '#166534',
               padding: '0.3rem 0.75rem',
               borderRadius: '999px',
               fontSize: '0.85rem',
@@ -122,7 +122,7 @@ export function CampsiteDetail({ campsite, reviews, isFavorite, onToggleFavorite
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                 {review.authorWebsite ? (
-                  <a href={review.authorWebsite} style={{ color: '#2563eb', fontWeight: 600 }}>
+                  <a href={review.authorWebsite} style={{ color: '#15803d', fontWeight: 600 }}>
                     {review.author}
                   </a>
                 ) : (
@@ -134,7 +134,7 @@ export function CampsiteDetail({ campsite, reviews, isFavorite, onToggleFavorite
                 {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
               </div>
               <p
-                style={{ margin: 0, color: '#374151', lineHeight: 1.5 }}
+                style={{ margin: 0, color: '#274e36', lineHeight: 1.5 }}
                 dangerouslySetInnerHTML={{ __html: review.text }}
               />
             </div>
@@ -148,7 +148,7 @@ export function CampsiteDetail({ campsite, reviews, isFavorite, onToggleFavorite
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div style={{ fontSize: '0.75rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+      <div style={{ fontSize: '0.75rem', color: '#4b6b57', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
         {label}
       </div>
       <div style={{ fontSize: '0.95rem', fontWeight: 500, marginTop: '0.15rem' }}>{value}</div>

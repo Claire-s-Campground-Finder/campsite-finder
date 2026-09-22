@@ -108,7 +108,7 @@ export function ManageBooking({ manager }: ManageBookingProps) {
             padding: '0.6rem 1rem',
             borderRadius: 8,
             border: 'none',
-            background: '#2563eb',
+            background: '#15803d',
             color: '#fff',
             cursor: 'pointer',
           }}

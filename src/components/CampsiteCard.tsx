@@ -15,20 +15,20 @@ const TYPE_ICONS: Record<string, string> = {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  tent: '#059669',
-  rv: '#2563eb',
-  cabin: '#9333ea',
-  glamping: '#d97706',
+  tent: '#15803d',
+  rv: '#0f766e',
+  cabin: '#4d7c0f',
+  glamping: '#65a30d',
 }
 
 export function CampsiteCard({ campsite, isFavorite, onToggleFavorite, onSelect }: CampsiteCardProps) {
   return (
     <div
       style={{
-        border: '1px solid #e5e7eb',
+        border: '1px solid #bbddc5',
         borderRadius: '12px',
         overflow: 'hidden',
-        background: '#fff',
+        background: '#fbfffc',
         transition: 'box-shadow 0.2s',
         cursor: 'pointer',
       }}
@@ -102,12 +102,12 @@ export function CampsiteCard({ campsite, isFavorite, onToggleFavorite, onSelect 
       <div style={{ padding: '1rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.25rem' }}>
           <h3 style={{ margin: 0, fontSize: '1.05rem' }}>{campsite.name}</h3>
-          <span style={{ fontWeight: 700, color: '#111', whiteSpace: 'nowrap', marginLeft: '0.5rem' }}>
-            ${campsite.pricePerNight}<span style={{ fontWeight: 400, color: '#6b7280', fontSize: '0.8rem' }}>/night</span>
+          <span style={{ fontWeight: 700, color: '#173c27', whiteSpace: 'nowrap', marginLeft: '0.5rem' }}>
+            ${campsite.pricePerNight}<span style={{ fontWeight: 400, color: '#4b6b57', fontSize: '0.8rem' }}>/night</span>
           </span>
         </div>
 
-        <p style={{ margin: '0.25rem 0', color: '#6b7280', fontSize: '0.85rem' }}>
+        <p style={{ margin: '0.25rem 0', color: '#4b6b57', fontSize: '0.85rem' }}>
           {campsite.location}, {campsite.state}
         </p>
 
@@ -127,15 +127,15 @@ export function CampsiteCard({ campsite, isFavorite, onToggleFavorite, onSelect 
           <span style={{ fontSize: '0.85rem', color: '#f59e0b' }}>
             {'★'.repeat(Math.round(campsite.rating))} {campsite.rating}
           </span>
-          <span style={{ fontSize: '0.8rem', color: '#9ca3af' }}>
+          <span style={{ fontSize: '0.8rem', color: '#70917a' }}>
             ({campsite.reviewCount})
           </span>
           {campsite.petFriendly && (
-            <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>🐾 Pet OK</span>
+            <span style={{ fontSize: '0.75rem', color: '#4b6b57' }}>🐾 Pet OK</span>
           )}
         </div>
 
-        <p style={{ margin: '0.5rem 0 0', color: '#4b5563', fontSize: '0.85rem', lineHeight: 1.4 }}>
+        <p style={{ margin: '0.5rem 0 0', color: '#315c40', fontSize: '0.85rem', lineHeight: 1.4 }}>
           {campsite.description.slice(0, 100)}...
         </p>
       </div>

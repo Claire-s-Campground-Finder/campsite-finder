@@ -23,10 +23,10 @@ export function MapView({ campsites, onSelect }: MapViewProps) {
         position: 'relative',
         width: '100%',
         height: 500,
-        background: 'linear-gradient(180deg, #dbeafe 0%, #bfdbfe 30%, #93c5fd 100%)',
+        background: 'linear-gradient(180deg, #dcfce7 0%, #bbf7d0 45%, #86efac 100%)',
         borderRadius: '12px',
         overflow: 'hidden',
-        border: '1px solid #e5e7eb',
+        border: '1px solid #86d59e',
       }}
     >
       {/* Simple California shape hint */}
@@ -40,7 +40,7 @@ export function MapView({ campsites, onSelect }: MapViewProps) {
           opacity: 0.08,
           fontSize: '12rem',
           fontWeight: 900,
-          color: '#1e40af',
+          color: '#14532d',
           pointerEvents: 'none',
           userSelect: 'none',
         }}
@@ -60,7 +60,7 @@ export function MapView({ campsites, onSelect }: MapViewProps) {
               left: pos.left,
               top: pos.top,
               transform: 'translate(-50%, -50%)',
-              background: site.available ? '#2563eb' : '#9ca3af',
+              background: site.available ? '#15803d' : '#70917a',
               color: '#fff',
               border: '2px solid #fff',
               borderRadius: '999px',

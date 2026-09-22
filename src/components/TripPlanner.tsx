@@ -92,8 +92,8 @@ function DayCard({ day, onUpdateCampsite, onAddActivity, onRemoveActivity }: {
       {day.activities.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', marginTop: '0.3rem' }}>
           {day.activities.map((a, i) => (
-            <span key={i} style={{ background: '#eff6ff', color: '#1d4ed8', padding: '0.1rem 0.4rem', borderRadius: '999px', fontSize: '0.8rem' }}>
-              {a} <button onClick={() => onRemoveActivity(day.id, i)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#93c5fd', padding: 0 }}>&times;</button>
+            <span key={i} style={{ background: '#dcfce7', color: '#166534', padding: '0.1rem 0.4rem', borderRadius: '999px', fontSize: '0.8rem' }}>
+              {a} <button onClick={() => onRemoveActivity(day.id, i)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#4ade80', padding: 0 }}>&times;</button>
             </span>
           ))}
         </div>
@@ -104,4 +104,4 @@ function DayCard({ day, onUpdateCampsite, onAddActivity, onRemoveActivity }: {
 
 const labelStyle: React.CSSProperties = { display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#374151', marginBottom: '0.2rem' }
 const inputStyle: React.CSSProperties = { padding: '0.45rem 0.5rem', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.85rem' }
-const btnStyle: React.CSSProperties = { padding: '0.45rem 0.9rem', borderRadius: '6px', border: 'none', background: '#2563eb', color: '#fff', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }
+const btnStyle: React.CSSProperties = { padding: '0.45rem 0.9rem', borderRadius: '6px', border: 'none', background: '#15803d', color: '#fff', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }

@@ -52,24 +52,24 @@ function App() {
   const campsiteReviews = selectedId ? REVIEWS.filter((r) => r.campsiteId === selectedId) : []
 
   return (
-    <div style={{ fontFamily: 'system-ui', maxWidth: 960, margin: '0 auto', padding: '2rem' }}>
+    <div style={{ fontFamily: 'system-ui', maxWidth: 960, margin: '0 auto', padding: '2rem', color: '#173c27' }}>
       <header style={{ marginBottom: '1.5rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h1 style={{ margin: 0, fontSize: '1.75rem' }}>Campsite Finder</h1>
-            <p style={{ margin: '0.25rem 0 0', color: '#6b7280' }}>
+            <p style={{ margin: '0.25rem 0 0', color: '#4b6b57' }}>
               Discover the best campsites in California
             </p>
           </div>
           {!selectedCampsite && (
-            <div style={{ display: 'flex', gap: '0.25rem', background: '#f3f4f6', borderRadius: '8px', padding: '0.25rem' }}>
+            <div style={{ display: 'flex', gap: '0.25rem', background: '#dcfce7', borderRadius: '8px', padding: '0.25rem' }}>
               <button
                 onClick={() => setViewMode('grid')}
                 style={{
                   padding: '0.4rem 0.8rem',
                   borderRadius: '6px',
                   border: 'none',
-                  background: viewMode === 'grid' ? '#fff' : 'transparent',
+                  background: viewMode === 'grid' ? '#f0fdf4' : 'transparent',
                   boxShadow: viewMode === 'grid' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
                   cursor: 'pointer',
                   fontWeight: viewMode === 'grid' ? 600 : 400,
@@ -84,7 +84,7 @@ function App() {
                   padding: '0.4rem 0.8rem',
                   borderRadius: '6px',
                   border: 'none',
-                  background: viewMode === 'map' ? '#fff' : 'transparent',
+                  background: viewMode === 'map' ? '#f0fdf4' : 'transparent',
                   boxShadow: viewMode === 'map' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
                   cursor: 'pointer',
                   fontWeight: viewMode === 'map' ? 600 : 400,
@@ -99,7 +99,7 @@ function App() {
                   padding: '0.4rem 0.8rem',
                   borderRadius: '6px',
                   border: 'none',
-                  background: viewMode === 'manage' ? '#fff' : 'transparent',
+                  background: viewMode === 'manage' ? '#f0fdf4' : 'transparent',
                   boxShadow: viewMode === 'manage' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
                   cursor: 'pointer',
                   fontWeight: viewMode === 'manage' ? 600 : 400,
@@ -142,12 +142,12 @@ function App() {
           {viewMode === 'map' ? (
             <MapView campsites={filtered} onSelect={openCampsite} />
           ) : filtered.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem', color: '#9ca3af' }}>
+            <div style={{ textAlign: 'center', padding: '3rem', color: '#70917a' }}>
               <p style={{ fontSize: '1.25rem' }}>No campsites match your filters</p>
               <button
                 onClick={resetFilters}
                 style={{
-                  background: '#2563eb',
+                  background: '#15803d',
                   color: '#fff',
                   border: 'none',
                   padding: '0.5rem 1.25rem',

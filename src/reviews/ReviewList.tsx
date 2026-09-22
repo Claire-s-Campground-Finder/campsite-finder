@@ -149,7 +149,7 @@ export function ReviewList({ reviews, campsiteName, onWriteReview }: ReviewListP
                   alignItems: 'center',
                   gap: '0.5rem',
                   width: '100%',
-                  background: filterRating === star ? '#eff6ff' : 'none',
+                  background: filterRating === star ? '#dcfce7' : 'none',
                   border: 'none',
                   padding: '0.15rem 0.5rem',
                   borderRadius: '4px',
@@ -199,7 +199,7 @@ export function ReviewList({ reviews, campsiteName, onWriteReview }: ReviewListP
           {filterRating > 0 && (
             <button
               onClick={() => setFilterRating(0)}
-              style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '999px', padding: '0.25rem 0.75rem', fontSize: '0.8rem', cursor: 'pointer', color: '#2563eb' }}
+              style={{ background: '#dcfce7', border: '1px solid #86efac', borderRadius: '999px', padding: '0.25rem 0.75rem', fontSize: '0.8rem', cursor: 'pointer', color: '#15803d' }}
             >
               {filterRating} ★ only &times;
             </button>
@@ -245,7 +245,7 @@ export function ReviewList({ reviews, campsiteName, onWriteReview }: ReviewListP
               {isLong && (
                 <button
                   onClick={() => toggleExpanded(review.id)}
-                  style={{ background: 'none', border: 'none', color: '#2563eb', cursor: 'pointer', fontSize: '0.85rem', padding: 0 }}
+                  style={{ background: 'none', border: 'none', color: '#15803d', cursor: 'pointer', fontSize: '0.85rem', padding: 0 }}
                 >
                   {isExpanded ? 'Show less' : 'Read more'}
                 </button>
@@ -285,8 +285,8 @@ export function ReviewList({ reviews, campsiteName, onWriteReview }: ReviewListP
 
               {/* Manager response */}
               {review.response && (
-                <div style={{ marginTop: '0.75rem', padding: '0.75rem', background: '#f9fafb', borderRadius: '8px', borderLeft: '3px solid #2563eb' }}>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem', color: '#2563eb' }}>
+                <div style={{ marginTop: '0.75rem', padding: '0.75rem', background: '#f0fdf4', borderRadius: '8px', borderLeft: '3px solid #15803d' }}>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem', color: '#15803d' }}>
                     Campground Response
                   </div>
                   <p style={{ margin: 0, fontSize: '0.85rem', color: '#374151', lineHeight: 1.4 }}>{review.response.text}</p>
@@ -305,7 +305,7 @@ const primaryButtonStyle: React.CSSProperties = {
   padding: '0.45rem 1rem',
   borderRadius: '8px',
   border: 'none',
-  background: '#2563eb',
+  background: '#15803d',
   color: '#fff',
   fontWeight: 600,
   fontSize: '0.85rem',

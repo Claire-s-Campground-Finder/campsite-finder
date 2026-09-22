@@ -39,7 +39,7 @@ export function NearbyTrails() {
       <h3 style={{ margin: '0 0 0.75rem' }}>Nearby Trails</h3>
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
         {['all', 'easy', 'moderate', 'hard'].map((d) => (
-          <button key={d} onClick={() => setFilter(d)} style={{ padding: '0.3rem 0.7rem', borderRadius: '999px', border: filter === d ? 'none' : '1px solid #d1d5db', background: filter === d ? '#2563eb' : '#fff', color: filter === d ? '#fff' : '#374151', fontSize: '0.8rem', cursor: 'pointer', textTransform: 'capitalize' }}>
+          <button key={d} onClick={() => setFilter(d)} style={{ padding: '0.3rem 0.7rem', borderRadius: '999px', border: filter === d ? 'none' : '1px solid #d1d5db', background: filter === d ? '#15803d' : '#fff', color: filter === d ? '#fff' : '#274e36', fontSize: '0.8rem', cursor: 'pointer', textTransform: 'capitalize' }}>
             {d}
           </button>
         ))}
@@ -59,7 +59,7 @@ export function NearbyTrails() {
               </div>
               <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.2rem' }}>
                 {trail.features.map((f) => (
-                  <span key={f} style={{ fontSize: '0.7rem', background: '#eff6ff', color: '#1d4ed8', padding: '0.05rem 0.35rem', borderRadius: '4px' }}>{f}</span>
+                  <span key={f} style={{ fontSize: '0.7rem', background: '#dcfce7', color: '#166534', padding: '0.05rem 0.35rem', borderRadius: '4px' }}>{f}</span>
                 ))}
               </div>
             </div>
