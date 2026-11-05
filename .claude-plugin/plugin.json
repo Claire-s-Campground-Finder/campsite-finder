@@ -1,0 +1,9 @@
+{
+  "name": "supabase",
+  "version": "0.1.0",
+  "description": "Supabase MCP server (read-only) for Murmur agents working on Campsite Finder.",
+  "author": {
+    "name": "Claire's Campground Finder",
+    "url": "https://github.com/Claire-s-Campground-Finder"
+  }
+}
